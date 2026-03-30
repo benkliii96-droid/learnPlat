@@ -13,15 +13,18 @@ export default function Layout() {
   return (
     <div className="min-h-screen bg-gray-50">
       <header className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
+        <div className="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
             <div className="flex items-center">
               <Link to="/" className="text-xl font-bold text-gray-900">
                 CodeLearn
               </Link>
-              <nav className="ml-10 flex space-x-4">
+              <nav className="flex ml-10 space-x-4">
                 <Link to="/courses" className="text-gray-600 hover:text-gray-900">
                   Курсы
+                </Link>
+                <Link to="/leaderboard" className="text-gray-600 hover:text-gray-900">
+                  Рейтинг
                 </Link>
                 {user?.role === 'admin' && (
                   <Link to="/admin" className="text-gray-600 hover:text-gray-900">
@@ -50,7 +53,7 @@ export default function Layout() {
                   </Link>
                   <Link
                     to="/register"
-                    className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+                    className="px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700"
                   >
                     Регистрация
                   </Link>
@@ -61,7 +64,7 @@ export default function Layout() {
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="px-4 py-8 mx-auto max-w-7xl sm:px-6 lg:px-8">
         <Outlet />
       </main>
     </div>

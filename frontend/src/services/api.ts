@@ -43,6 +43,7 @@ export const usersApi = {
   changePassword: (data: { currentPassword: string; newPassword: string }) =>
     api.put('/users/password', data),
   getStats: () => api.get('/users/stats'),
+  getLeaderboard: () => api.get('/users/leaderboard'),
 };
 
 // Courses

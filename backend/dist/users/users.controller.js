@@ -39,6 +39,9 @@ let UsersController = class UsersController {
     async getStats(req) {
         return this.usersService.getStats(req.user.userId);
     }
+    async getLeaderboard() {
+        return this.usersService.getLeaderboard();
+    }
 };
 exports.UsersController = UsersController;
 __decorate([
@@ -66,6 +69,13 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], UsersController.prototype, "getStats", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.Get)('leaderboard'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], UsersController.prototype, "getLeaderboard", null);
 exports.UsersController = UsersController = __decorate([
     (0, common_1.Controller)('users'),
     __metadata("design:paramtypes", [users_service_1.UsersService])

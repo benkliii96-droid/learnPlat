@@ -17,4 +17,11 @@ export declare class UsersService {
     incrementCompletedTasks(userId: string): Promise<void>;
     findAll(): Promise<User[]>;
     createAdmin(email: string, name: string, password: string): Promise<User>;
+    getLeaderboard(): Promise<{
+        id: string;
+        name: string;
+        totalPoints: number;
+        completedTasks: number;
+        completedTopics: number;
+    }[]>;
 }

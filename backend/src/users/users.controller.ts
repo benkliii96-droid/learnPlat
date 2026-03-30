@@ -1,6 +1,8 @@
 import { Controller, Get, Put, Body, UseGuards, Request } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { RolesGuard } from '../auth/roles.guard';
+import { UserRole } from './user.entity';
 
 @Controller('users')
 export class UsersController {
@@ -36,5 +38,11 @@ export class UsersController {
   @Get('stats')
   async getStats(@Request() req) {
     return this.usersService.getStats(req.user.userId);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('leaderboard')
+  async getLeaderboard() {
+    return this.usersService.getLeaderboard();
   }
 }

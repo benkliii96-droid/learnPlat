@@ -1,4 +1,5 @@
 import { UsersService } from './users.service';
+import { UserRole } from './user.entity';
 export declare class UsersController {
     private readonly usersService;
     constructor(usersService: UsersService);
@@ -9,7 +10,7 @@ export declare class UsersController {
         id: string;
         email: string;
         name: string;
-        role: import("./user.entity").UserRole;
+        role: UserRole;
     }>;
     changePassword(req: any, body: {
         currentPassword: string;
@@ -22,4 +23,11 @@ export declare class UsersController {
         completedTasks: number;
         totalPoints: number;
     }>;
+    getLeaderboard(): Promise<{
+        id: string;
+        name: string;
+        totalPoints: number;
+        completedTasks: number;
+        completedTopics: number;
+    }[]>;
 }

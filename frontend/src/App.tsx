@@ -10,6 +10,7 @@ import TopicView from './pages/TopicView';
 import TaskView from './pages/TaskView';
 import Profile from './pages/Profile';
 import MySubmissions from './pages/MySubmissions';
+import Leaderboard from './pages/Leaderboard';
 import AdminDashboard from './pages/AdminDashboard';
 import AdminCourseEdit from './pages/AdminCourseEdit';
 import AdminTopicEdit from './pages/AdminTopicEdit';
@@ -64,6 +65,7 @@ export default function App() {
         <Route path="my-submissions" element={
           <PrivateRoute><MySubmissions /></PrivateRoute>
         } />
+        <Route path="leaderboard" element={<Leaderboard />} />
         
         {/* Admin routes */}
         <Route path="admin" element={
