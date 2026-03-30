@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import ReactMarkdown from 'react-markdown';
+import MarkdownRenderer from '../components/MarkdownRenderer';
 import { topicsApi, tasksApi, submissionsApi } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 
@@ -94,7 +94,7 @@ export default function TopicView() {
         <div className="p-6">
           {activeTab === 'material' && (
             <div className="prose max-w-none">
-              <ReactMarkdown>{topic?.content || ''}</ReactMarkdown>
+              <MarkdownRenderer content={topic?.content || ''} />
             </div>
           )}
 

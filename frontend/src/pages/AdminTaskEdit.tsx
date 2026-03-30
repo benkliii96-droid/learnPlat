@@ -1,8 +1,10 @@
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import MarkdownRenderer from '../components/MarkdownRenderer';
 import { tasksApi, topicsApi } from '../services/api';
 
 const taskSchema = z.object({
@@ -25,6 +27,7 @@ export default function AdminTaskEdit() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const isNew = !taskId;
+  const [showPreview, setShowPreview] = useState(false);
 
   const { data: topics } = useQuery({
     queryKey: ['topics-admin'],
@@ -117,22 +120,22 @@ export default function AdminTaskEdit() {
   };
 
   if (!isNew && isLoading) {
-    return <div className="text-center py-8">Загрузка...</div>;
+    return <div className="py-8 text-center">Загрузка...</div>;
   }
 
   return (
     <div className="max-w-2xl mx-auto">
-      <h1 className="text-3xl font-bold text-gray-900 mb-8">
+      <h1 className="mb-8 text-3xl font-bold text-gray-900">
         {isNew ? 'Создание задания' : 'Редактирование задания'}
       </h1>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="bg-white rounded-lg shadow p-6 space-y-6">
+      <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-6 bg-white rounded-lg shadow">
         <div>
           <label className="block text-sm font-medium text-gray-700">Тема</label>
           <select
             {...register('topicId')}
             defaultValue={task?.topicId}
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg"
+            className="block w-full px-3 py-2 mt-1 border border-gray-300 rounded-lg"
           >
             <option value="">Выберите тему</option>
             {topics?.map((topic) => (
@@ -151,7 +154,7 @@ export default function AdminTaskEdit() {
           <input
             {...register('name')}
             defaultValue={task?.name}
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg"
+            className="block w-full px-3 py-2 mt-1 border border-gray-300 rounded-lg"
           />
           {errors.name && (
             <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>
@@ -159,13 +162,44 @@ export default function AdminTaskEdit() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700">Описание</label>
-          <textarea
-            {...register('description')}
-            defaultValue={task?.description}
-            rows={4}
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg"
-          />
+          <div className="flex items-center justify-between mb-2">
+            <label className="block text-sm font-medium text-gray-700">Описание</label>
+            <div className="flex space-x-2">
+              <button
+                type="button"
+                onClick={() => setShowPreview(false)}
+                className={`px-3 py-1 text-sm rounded ${
+                  !showPreview ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'
+                }`}
+              >
+                Редактор
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowPreview(true)}
+                className={`px-3 py-1 text-sm rounded ${
+                  showPreview ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'
+                }`}
+              >
+                Предпросмотр
+              </button>
+            </div>
+          </div>
+          
+          {showPreview ? (
+            <div className="mt-1 p-4 border border-gray-300 rounded-lg bg-gray-50 min-h-[100px]">
+              <div className="prose max-w-none">
+                <MarkdownRenderer content={watch('description') || task?.description || ''} />
+              </div>
+            </div>
+          ) : (
+            <textarea
+              {...register('description')}
+              defaultValue={task?.description}
+              rows={4}
+              className="block w-full px-3 py-2 mt-1 border border-gray-300 rounded-lg"
+            />
+          )}
         </div>
 
         <div>
@@ -173,7 +207,7 @@ export default function AdminTaskEdit() {
           <select
             {...register('type')}
             defaultValue={task?.type || 'manual'}
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg"
+            className="block w-full px-3 py-2 mt-1 border border-gray-300 rounded-lg"
           >
             <option value="manual">Ручная проверка</option>
             <option value="auto">Автоматическая проверка</option>
@@ -188,7 +222,7 @@ export default function AdminTaskEdit() {
                 {...register('starterCode')}
                 defaultValue={task?.starterCode}
                 rows={6}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg font-mono text-sm"
+                className="block w-full px-3 py-2 mt-1 font-mono text-sm border border-gray-300 rounded-lg"
                 placeholder="// Начальный код для задания"
               />
             </div>
@@ -201,7 +235,7 @@ export default function AdminTaskEdit() {
                 {...register('tests')}
                 defaultValue={task?.tests ? JSON.stringify(task.tests, null, 2) : ''}
                 rows={8}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg font-mono text-sm"
+                className="block w-full px-3 py-2 mt-1 font-mono text-sm border border-gray-300 rounded-lg"
                 placeholder='[{"name": "Test 1", "testCode": "...", "expected": ...}]'
               />
             </div>
@@ -215,7 +249,7 @@ export default function AdminTaskEdit() {
               {...register('criteria')}
               defaultValue={task?.criteria}
               rows={3}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg"
+              className="block w-full px-3 py-2 mt-1 border border-gray-300 rounded-lg"
             />
           </div>
         )}
@@ -227,7 +261,7 @@ export default function AdminTaskEdit() {
               {...register('maxPoints')}
               type="number"
               defaultValue={task?.maxPoints || 10}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg"
+              className="block w-full px-3 py-2 mt-1 border border-gray-300 rounded-lg"
             />
           </div>
 
@@ -237,7 +271,7 @@ export default function AdminTaskEdit() {
                 {...register('isRequired')}
                 type="checkbox"
                 defaultChecked={task?.isRequired || false}
-                className="h-4 w-4 text-blue-600 border-gray-300 rounded"
+                className="w-4 h-4 text-blue-600 border-gray-300 rounded"
               />
               <label className="ml-2 text-sm text-gray-700">Обязательное</label>
             </div>
@@ -247,7 +281,7 @@ export default function AdminTaskEdit() {
                 {...register('isPublished')}
                 type="checkbox"
                 defaultChecked={task?.isPublished ?? true}
-                className="h-4 w-4 text-blue-600 border-gray-300 rounded"
+                className="w-4 h-4 text-blue-600 border-gray-300 rounded"
               />
               <label className="ml-2 text-sm text-gray-700">Опубликовано</label>
             </div>
@@ -258,7 +292,7 @@ export default function AdminTaskEdit() {
           <button
             type="submit"
             disabled={createMutation.isPending || updateMutation.isPending}
-            className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 disabled:opacity-50"
+            className="flex-1 px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50"
           >
             {isNew ? 'Создать' : 'Сохранить'}
           </button>
@@ -271,7 +305,7 @@ export default function AdminTaskEdit() {
                   deleteMutation.mutate();
                 }
               }}
-              className="bg-red-600 text-white py-2 px-4 rounded-lg hover:bg-red-700"
+              className="px-4 py-2 text-white bg-red-600 rounded-lg hover:bg-red-700"
             >
               Удалить
             </button>

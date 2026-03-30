@@ -10,7 +10,11 @@ export default function Home() {
     queryKey: ['courses'],
     queryFn: async () => {
       const response = await coursesApi.getAll();
-      return response.data;
+      return response.data.map((course: any) => ({
+        ...course,
+        totalTopics: course.topics?.length || 0,
+        totalTasks: course.topics?.reduce((acc: number, topic: any) => acc + (topic.tasks?.length || 0), 0) || 0,
+      }));
     },
   });
 
@@ -26,7 +30,7 @@ export default function Home() {
   return (
     <div className="space-y-8">
       <div className="text-center">
-        <h1 className="text-4xl font-bold text-gray-900 mb-4">
+        <h1 className="mb-4 text-4xl font-bold text-gray-900">
           Добро пожаловать на платформу обучения программированию
         </h1>
         <p className="text-xl text-gray-600">
@@ -35,8 +39,8 @@ export default function Home() {
       </div>
 
       {user && (
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">
+        <div className="p-6 bg-white rounded-lg shadow">
+          <h2 className="mb-4 text-2xl font-bold text-gray-900">
             Ваш прогресс, {user.name}!
           </h2>
           <div className="grid grid-cols-3 gap-4">
@@ -63,15 +67,15 @@ export default function Home() {
       )}
 
       <div>
-        <h2 className="text-2xl font-bold text-gray-900 mb-4">Доступные курсы</h2>
-        <div className="grid md:grid-cols-3 gap-6">
+        <h2 className="mb-4 text-2xl font-bold text-gray-900">Доступные курсы</h2>
+        <div className="grid gap-6 md:grid-cols-3">
           {courses?.map((course) => (
             <Link
               key={course.id}
               to={`/courses/${course.id}`}
-              className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-shadow"
+              className="p-6 transition-shadow bg-white rounded-lg shadow hover:shadow-lg"
             >
-              <h3 className="text-xl font-bold text-gray-900 mb-2">
+              <h3 className="mb-2 text-xl font-bold text-gray-900">
                 {course.name}
               </h3>
               <p className="text-gray-600">{course.description}</p>

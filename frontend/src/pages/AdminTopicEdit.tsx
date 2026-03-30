@@ -1,8 +1,10 @@
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import MarkdownRenderer from '../components/MarkdownRenderer';
 import { topicsApi, coursesApi } from '../services/api';
 
 const topicSchema = z.object({
@@ -20,6 +22,7 @@ export default function AdminTopicEdit() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const isNew = !topicId;
+  const [showPreview, setShowPreview] = useState(false);
 
   const { data: courses } = useQuery({
     queryKey: ['courses-admin'],
@@ -41,6 +44,7 @@ export default function AdminTopicEdit() {
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors },
   } = useForm<TopicForm>({
     resolver: zodResolver(topicSchema),
@@ -103,22 +107,22 @@ export default function AdminTopicEdit() {
   };
 
   if (!isNew && isLoading) {
-    return <div className="text-center py-8">Загрузка...</div>;
+    return <div className="py-8 text-center">Загрузка...</div>;
   }
 
   return (
     <div className="max-w-2xl mx-auto">
-      <h1 className="text-3xl font-bold text-gray-900 mb-8">
+      <h1 className="mb-8 text-3xl font-bold text-gray-900">
         {isNew ? 'Создание темы' : 'Редактирование темы'}
       </h1>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="bg-white rounded-lg shadow p-6 space-y-6">
+      <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-6 bg-white rounded-lg shadow">
         <div>
           <label className="block text-sm font-medium text-gray-700">Курс</label>
           <select
             {...register('courseId')}
             defaultValue={topic?.courseId}
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg"
+            className="block w-full px-3 py-2 mt-1 border border-gray-300 rounded-lg"
           >
             <option value="">Выберите курс</option>
             {courses?.map((course) => (
@@ -137,7 +141,7 @@ export default function AdminTopicEdit() {
           <input
             {...register('name')}
             defaultValue={topic?.name}
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg"
+            className="block w-full px-3 py-2 mt-1 border border-gray-300 rounded-lg"
           />
           {errors.name && (
             <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>
@@ -145,14 +149,45 @@ export default function AdminTopicEdit() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700">Содержание (Markdown)</label>
-          <textarea
-            {...register('content')}
-            defaultValue={topic?.content}
-            rows={10}
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg font-mono text-sm"
-            placeholder="Введите учебный материал в формате Markdown..."
-          />
+          <div className="flex items-center justify-between mb-2">
+            <label className="block text-sm font-medium text-gray-700">Содержание (Markdown)</label>
+            <div className="flex space-x-2">
+              <button
+                type="button"
+                onClick={() => setShowPreview(false)}
+                className={`px-3 py-1 text-sm rounded ${
+                  !showPreview ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'
+                }`}
+              >
+                Редактор
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowPreview(true)}
+                className={`px-3 py-1 text-sm rounded ${
+                  showPreview ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'
+                }`}
+              >
+                Предпросмотр
+              </button>
+            </div>
+          </div>
+          
+          {showPreview ? (
+            <div className="mt-1 p-4 border border-gray-300 rounded-lg bg-gray-50 min-h-[250px]">
+              <div className="prose max-w-none">
+                <MarkdownRenderer content={watch('content') || topic?.content || ''} />
+              </div>
+            </div>
+          ) : (
+            <textarea
+              {...register('content')}
+              defaultValue={topic?.content}
+              rows={10}
+              className="block w-full px-3 py-2 mt-1 font-mono text-sm border border-gray-300 rounded-lg"
+              placeholder="Введите учебный материал в формате Markdown..."
+            />
+          )}
         </div>
 
         <div>
@@ -161,7 +196,7 @@ export default function AdminTopicEdit() {
             {...register('order')}
             type="number"
             defaultValue={topic?.order || 0}
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg"
+            className="block w-full px-3 py-2 mt-1 border border-gray-300 rounded-lg"
           />
         </div>
 
@@ -170,7 +205,7 @@ export default function AdminTopicEdit() {
             {...register('isPublished')}
             type="checkbox"
             defaultChecked={topic?.isPublished ?? true}
-            className="h-4 w-4 text-blue-600 border-gray-300 rounded"
+            className="w-4 h-4 text-blue-600 border-gray-300 rounded"
           />
           <label className="ml-2 text-sm text-gray-700">Опубликовано</label>
         </div>
@@ -179,7 +214,7 @@ export default function AdminTopicEdit() {
           <button
             type="submit"
             disabled={createMutation.isPending || updateMutation.isPending}
-            className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 disabled:opacity-50"
+            className="flex-1 px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50"
           >
             {isNew ? 'Создать' : 'Сохранить'}
           </button>
@@ -192,7 +227,7 @@ export default function AdminTopicEdit() {
                   deleteMutation.mutate();
                 }
               }}
-              className="bg-red-600 text-white py-2 px-4 rounded-lg hover:bg-red-700"
+              className="px-4 py-2 text-white bg-red-600 rounded-lg hover:bg-red-700"
             >
               Удалить
             </button>

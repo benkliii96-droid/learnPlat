@@ -7,33 +7,37 @@ export default function Courses() {
     queryKey: ['courses'],
     queryFn: async () => {
       const response = await coursesApi.getAll();
-      return response.data;
+      return response.data.map((course: any) => ({
+        ...course,
+        totalTopics: course.topics?.length || 0,
+        totalTasks: course.topics?.reduce((acc: number, topic: any) => acc + (topic.tasks?.length || 0), 0) || 0,
+      }));
     },
   });
 
   if (isLoading) {
-    return <div className="text-center py-8">Загрузка...</div>;
+    return <div className="py-8 text-center">Загрузка...</div>;
   }
 
   return (
     <div>
-      <h1 className="text-3xl font-bold text-gray-900 mb-8">Курсы</h1>
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <h1 className="mb-8 text-3xl font-bold text-gray-900">Курсы</h1>
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {courses?.map((course) => (
           <Link
             key={course.id}
             to={`/courses/${course.id}`}
-            className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-shadow"
+            className="p-6 transition-shadow bg-white rounded-lg shadow hover:shadow-lg"
           >
-            <h2 className="text-xl font-bold text-gray-900 mb-2">
+            <h2 className="mb-2 text-xl font-bold text-gray-900">
               {course.name}
             </h2>
-            <p className="text-gray-600 mb-4">{course.description}</p>
+            <p className="mb-4 text-gray-600">{course.description}</p>
             <div className="flex items-center text-sm text-gray-500">
-              <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded">
+              <span className="px-2 py-1 text-blue-800 bg-blue-100 rounded">
                 {course.totalTopics || 0} тем
               </span>
-              <span className="ml-2 bg-green-100 text-green-800 px-2 py-1 rounded">
+              <span className="px-2 py-1 ml-2 text-green-800 bg-green-100 rounded">
                 {course.totalTasks || 0} заданий
               </span>
             </div>
@@ -41,7 +45,7 @@ export default function Courses() {
         ))}
       </div>
       {(!courses || courses.length === 0) && (
-        <p className="text-gray-600 text-center py-8">Курсы пока не добавлены</p>
+        <p className="py-8 text-center text-gray-600">Курсы пока не добавлены</p>
       )}
     </div>
   );

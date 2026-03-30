@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import ReactMarkdown from 'react-markdown';
+import MarkdownRenderer from '../components/MarkdownRenderer';
 import { tasksApi, submissionsApi } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 
@@ -121,7 +121,7 @@ export default function TaskView() {
         <div className="p-6 bg-white rounded-lg shadow">
           <h2 className="mb-4 text-xl font-bold text-gray-900">Описание</h2>
           <div className="prose text-gray-700 max-w-none">
-            <ReactMarkdown>{task?.description || ''}</ReactMarkdown>
+            <MarkdownRenderer content={task?.description || ''} />
           </div>
           
           {task?.criteria && (

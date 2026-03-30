@@ -27,6 +27,7 @@ export default function Profile() {
       const response = await usersApi.getStats();
       return response.data;
     },
+    enabled: !!user,
   });
 
   const {
@@ -61,10 +62,10 @@ export default function Profile() {
 
   return (
     <div className="max-w-2xl mx-auto">
-      <h1 className="text-3xl font-bold text-gray-900 mb-8">Профиль</h1>
+      <h1 className="mb-8 text-3xl font-bold text-gray-900">Профиль</h1>
 
-      <div className="bg-white rounded-lg shadow p-6 mb-6">
-        <h2 className="text-xl font-bold text-gray-900 mb-4">Информация о пользователе</h2>
+      <div className="p-6 mb-6 bg-white rounded-lg shadow">
+        <h2 className="mb-4 text-xl font-bold text-gray-900">Информация о пользователе</h2>
         <div className="space-y-3">
           <div>
             <span className="text-gray-600">Имя:</span>{' '}
@@ -81,22 +82,22 @@ export default function Profile() {
         </div>
       </div>
 
-      <div className="bg-white rounded-lg shadow p-6 mb-6">
-        <h2 className="text-xl font-bold text-gray-900 mb-4">Статистика</h2>
+      <div className="p-6 mb-6 bg-white rounded-lg shadow">
+        <h2 className="mb-4 text-xl font-bold text-gray-900">Статистика</h2>
         <div className="grid grid-cols-3 gap-4">
-          <div className="text-center p-4 bg-blue-50 rounded-lg">
+          <div className="p-4 text-center rounded-lg bg-blue-50">
             <div className="text-3xl font-bold text-blue-600">
               {stats?.completedTopics || 0}
             </div>
             <div className="text-sm text-gray-600">Тем пройдено</div>
           </div>
-          <div className="text-center p-4 bg-green-50 rounded-lg">
+          <div className="p-4 text-center rounded-lg bg-green-50">
             <div className="text-3xl font-bold text-green-600">
               {stats?.completedTasks || 0}
             </div>
             <div className="text-sm text-gray-600">Заданий выполнено</div>
           </div>
-          <div className="text-center p-4 bg-purple-50 rounded-lg">
+          <div className="p-4 text-center rounded-lg bg-purple-50">
             <div className="text-3xl font-bold text-purple-600">
               {stats?.totalPoints || 0}
             </div>
@@ -105,8 +106,8 @@ export default function Profile() {
         </div>
       </div>
 
-      <div className="bg-white rounded-lg shadow p-6">
-        <h2 className="text-xl font-bold text-gray-900 mb-4">Смена пароля</h2>
+      <div className="p-6 bg-white rounded-lg shadow">
+        <h2 className="mb-4 text-xl font-bold text-gray-900">Смена пароля</h2>
         
         {message && (
           <div className={`mb-4 p-3 rounded ${
@@ -124,7 +125,7 @@ export default function Profile() {
             <input
               {...register('currentPassword')}
               type="password"
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg"
+              className="block w-full px-3 py-2 mt-1 border border-gray-300 rounded-lg"
             />
             {errors.currentPassword && (
               <p className="mt-1 text-sm text-red-600">{errors.currentPassword.message}</p>
@@ -138,7 +139,7 @@ export default function Profile() {
             <input
               {...register('newPassword')}
               type="password"
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg"
+              className="block w-full px-3 py-2 mt-1 border border-gray-300 rounded-lg"
             />
             {errors.newPassword && (
               <p className="mt-1 text-sm text-red-600">{errors.newPassword.message}</p>
@@ -152,7 +153,7 @@ export default function Profile() {
             <input
               {...register('confirmPassword')}
               type="password"
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg"
+              className="block w-full px-3 py-2 mt-1 border border-gray-300 rounded-lg"
             />
             {errors.confirmPassword && (
               <p className="mt-1 text-sm text-red-600">{errors.confirmPassword.message}</p>
@@ -162,7 +163,7 @@ export default function Profile() {
           <button
             type="submit"
             disabled={changePasswordMutation.isPending}
-            className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 disabled:opacity-50"
+            className="w-full px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50"
           >
             {changePasswordMutation.isPending ? 'Сохранение...' : 'Изменить пароль'}
           </button>

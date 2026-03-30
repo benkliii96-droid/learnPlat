@@ -19,6 +19,7 @@ export class CoursesService {
     return this.coursesRepository.find({
       order: { order: 'ASC' },
       where: { isPublished: true },
+      relations: ['topics', 'topics.tasks'],
     });
   }
 
