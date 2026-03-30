@@ -14,3 +14,29 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+/* Подсветка кода в Markdown */
+.code-block .keyword {
+  color: #c586c0;
+}
+
+.code-block .string {
+  color: #ce9178;
+}
+
+.code-block .number {
+  color: #b5cea8;
+}
+
+.code-block .boolean {
+  color: #569cd6;
+}
+
+.code-block .comment {
+  color: #6a9955;
+  font-style: italic;
+}
+
+.code-block .function {
+  color: #dcdcaa;
+}
