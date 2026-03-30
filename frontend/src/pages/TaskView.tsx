@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import ReactMarkdown from 'react-markdown';
 import { tasksApi, submissionsApi } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 
@@ -88,7 +89,7 @@ export default function TaskView() {
   };
 
   if (taskLoading) {
-    return <div className="text-center py-8">Загрузка...</div>;
+    return <div className="py-8 text-center">Загрузка...</div>;
   }
 
   const lastSubmission = mySubmissions?.[0];
@@ -98,42 +99,41 @@ export default function TaskView() {
       <div className="mb-6">
         <Link
           to={`/topics/${task?.topicId}`}
-          className="text-blue-600 hover:text-blue-700 mb-4 inline-block"
+          className="inline-block mb-4 text-blue-600 hover:text-blue-700"
         >
           ← Назад к теме
         </Link>
         <h1 className="text-3xl font-bold text-gray-900">{task?.name}</h1>
-        <div className="flex items-center space-x-4 mt-2">
-          <span className="bg-gray-100 text-gray-800 px-3 py-1 rounded">
+        <div className="flex items-center mt-2 space-x-4">
+          <span className="px-3 py-1 text-gray-800 bg-gray-100 rounded">
             {task?.type === 'auto' ? 'Автоматическая проверка' : 'Ручная проверка'}
           </span>
           <span className="text-gray-600">{task?.maxPoints} баллов</span>
           {isCompleted && (
-            <span className="bg-green-100 text-green-800 px-3 py-1 rounded">
+            <span className="px-3 py-1 text-green-800 bg-green-100 rounded">
               ✓ Выполнено
             </span>
           )}
         </div>
       </div>
 
-      <div className="grid lg:grid-cols-2 gap-6">
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">Описание</h2>
-          <div
-            className="prose max-w-none text-gray-700"
-            dangerouslySetInnerHTML={{ __html: task?.description || '' }}
-          />
+      <div className="grid gap-6 lg:grid-cols-2">
+        <div className="p-6 bg-white rounded-lg shadow">
+          <h2 className="mb-4 text-xl font-bold text-gray-900">Описание</h2>
+          <div className="prose text-gray-700 max-w-none">
+            <ReactMarkdown>{task?.description || ''}</ReactMarkdown>
+          </div>
           
           {task?.criteria && (
             <div className="mt-6">
-              <h3 className="font-bold text-gray-900 mb-2">Критерии оценки:</h3>
+              <h3 className="mb-2 font-bold text-gray-900">Критерии оценки:</h3>
               <p className="text-gray-700">{task.criteria}</p>
             </div>
           )}
         </div>
 
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">
+        <div className="p-6 bg-white rounded-lg shadow">
+          <h2 className="mb-4 text-xl font-bold text-gray-900">
             {task?.type === 'auto' ? 'Решение' : 'Отправка решения'}
           </h2>
           
@@ -142,13 +142,13 @@ export default function TaskView() {
               <textarea
                 value={code}
                 onChange={(e) => setCode(e.target.value)}
-                className="w-full h-64 p-4 border border-gray-300 rounded-lg font-mono text-sm bg-gray-900 text-gray-100"
+                className="w-full h-64 p-4 font-mono text-sm text-gray-100 bg-gray-900 border border-gray-300 rounded-lg"
                 placeholder="// Введите ваш код здесь..."
               />
               <button
                 type="submit"
                 disabled={isRunning || submitMutation.isPending}
-                className="mt-4 w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                className="w-full px-4 py-2 mt-4 text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50"
               >
                 {isRunning ? 'Запуск тестов...' : 'Отправить и запустить тесты'}
               </button>
@@ -164,7 +164,7 @@ export default function TaskView() {
               <button
                 type="submit"
                 disabled={submitMutation.isPending}
-                className="mt-4 w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                className="w-full px-4 py-2 mt-4 text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50"
               >
                 {submitMutation.isPending ? 'Отправка...' : 'Отправить на проверку'}
               </button>
@@ -173,7 +173,7 @@ export default function TaskView() {
 
           {testResults && (
             <div className="mt-6">
-              <h3 className="font-bold text-gray-900 mb-2">Результаты тестов:</h3>
+              <h3 className="mb-2 font-bold text-gray-900">Результаты тестов:</h3>
               <div className="space-y-2">
                 {testResults.results?.map((result: any, index: number) => (
                   <div
@@ -189,13 +189,13 @@ export default function TaskView() {
                       <span className="ml-2 font-medium">{result.name}</span>
                     </div>
                     {result.error && (
-                      <p className="text-red-600 text-sm mt-1">{result.error}</p>
+                      <p className="mt-1 text-sm text-red-600">{result.error}</p>
                     )}
                   </div>
                 ))}
               </div>
               {testResults.passed && (
-                <div className="mt-4 p-4 bg-green-100 rounded-lg text-green-800 font-bold text-center">
+                <div className="p-4 mt-4 font-bold text-center text-green-800 bg-green-100 rounded-lg">
                   Все тесты пройдены! +{task?.maxPoints} баллов
                 </div>
               )}
@@ -203,8 +203,8 @@ export default function TaskView() {
           )}
 
           {lastSubmission && task?.type === 'manual' && (
-            <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-              <h3 className="font-bold text-gray-900 mb-2">Последняя отправка:</h3>
+            <div className="p-4 mt-6 rounded-lg bg-gray-50">
+              <h3 className="mb-2 font-bold text-gray-900">Последняя отправка:</h3>
               <p className="text-gray-600">
                 Статус:{' '}
                 <span
@@ -227,7 +227,7 @@ export default function TaskView() {
                 <p className="text-gray-600">Баллы: {lastSubmission.points}</p>
               )}
               {lastSubmission.adminComment && (
-                <p className="text-gray-600 mt-2">
+                <p className="mt-2 text-gray-600">
                   Комментарий: {lastSubmission.adminComment}
                 </p>
               )}

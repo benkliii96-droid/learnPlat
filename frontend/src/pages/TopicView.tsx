@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
+import ReactMarkdown from 'react-markdown';
 import { topicsApi, tasksApi, submissionsApi } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 
@@ -46,7 +47,7 @@ export default function TopicView() {
   });
 
   if (topicLoading) {
-    return <div className="text-center py-8">Загрузка...</div>;
+    return <div className="py-8 text-center">Загрузка...</div>;
   }
 
   const requiredTasks = tasks?.filter(t => t.isRequired) || [];
@@ -57,7 +58,7 @@ export default function TopicView() {
       <div className="mb-6">
         <Link
           to={`/courses/${topic?.courseId}`}
-          className="text-blue-600 hover:text-blue-700 mb-4 inline-block"
+          className="inline-block mb-4 text-blue-600 hover:text-blue-700"
         >
           ← Назад к курсу
         </Link>
@@ -93,10 +94,7 @@ export default function TopicView() {
         <div className="p-6">
           {activeTab === 'material' && (
             <div className="prose max-w-none">
-              <div
-                className="whitespace-pre-wrap"
-                dangerouslySetInnerHTML={{ __html: topic?.content || '' }}
-              />
+              <ReactMarkdown>{topic?.content || ''}</ReactMarkdown>
             </div>
           )}
 
@@ -119,14 +117,14 @@ export default function TopicView() {
                       >
                         {task.name}
                       </Link>
-                      <p className="text-gray-600 text-sm mt-1">
+                      <p className="mt-1 text-sm text-gray-600">
                         {task.type === 'auto' ? 'Автоматическая проверка' : 'Ручная проверка'}
                         {task.isRequired && ' • Обязательное'}
                       </p>
                     </div>
                     <div className="flex items-center space-x-2">
                       {completedTasks?.[task.id] && (
-                        <span className="bg-green-100 text-green-800 px-2 py-1 rounded text-sm">
+                        <span className="px-2 py-1 text-sm text-green-800 bg-green-100 rounded">
                           ✓ Выполнено
                         </span>
                       )}
@@ -137,14 +135,14 @@ export default function TopicView() {
                   </div>
                   <Link
                     to={`/tasks/${task.id}`}
-                    className="mt-2 text-blue-600 hover:text-blue-700 inline-block"
+                    className="inline-block mt-2 text-blue-600 hover:text-blue-700"
                   >
                     {completedTasks?.[task.id] ? 'Просмотреть' : 'Выполнить'} →
                   </Link>
                 </div>
               ))}
               {(!tasks || tasks.length === 0) && (
-                <p className="text-gray-600 text-center py-8">
+                <p className="py-8 text-center text-gray-600">
                   Задания пока не добавлены
                 </p>
               )}
@@ -154,7 +152,7 @@ export default function TopicView() {
       </div>
 
       {user && activeTab === 'material' && allRequiredCompleted && (
-        <div className="mt-6 bg-green-50 border border-green-200 rounded-lg p-4">
+        <div className="p-4 mt-6 border border-green-200 rounded-lg bg-green-50">
           <p className="text-green-800">
             ✓ Все обязательные задания выполнены! Вы можете переходить к следующей теме.
           </p>
