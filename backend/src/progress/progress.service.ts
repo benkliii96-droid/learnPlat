@@ -27,7 +27,7 @@ export class ProgressService {
       let topicCompletedTasks = 0;
       
       for (const task of tasks) {
-        const isCompleted = await this.submissionsService.isTaskCompleted(userId, task.id);
+        const isCompleted = await this.submissionsService.isTaskCompleted(userId, (task as any).id);
         if (isCompleted) {
           completedTasks++;
           topicCompletedTasks++;
@@ -79,7 +79,7 @@ export class ProgressService {
 
       let allRequiredCompleted = true;
       for (const task of requiredTasks) {
-        const isCompleted = await this.submissionsService.isTaskCompleted(userId, task.id);
+        const isCompleted = await this.submissionsService.isTaskCompleted(userId, (task as any).id);
         if (!isCompleted) {
           allRequiredCompleted = false;
           break;

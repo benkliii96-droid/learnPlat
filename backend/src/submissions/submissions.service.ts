@@ -5,7 +5,7 @@ import { Submission, SubmissionStatus } from './submission.entity';
 import { UsersService } from '../users/users.service';
 import { TasksService } from '../tasks/tasks.service';
 import { ProgressService } from '../progress/progress.service';
-import { Task, TaskType } from '../tasks/task.entity';
+import { TaskType } from '../tasks/task.entity';
 
 @Injectable()
 export class SubmissionsService {

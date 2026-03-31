@@ -28,14 +28,14 @@ export class TasksService {
 
   async findByTopic(topicId: string): Promise<Task[]> {
     return this.tasksRepository.find({
-      where: { topicId, isPublished: true },
-      order: { createdAt: 'ASC' },
+      where: { topicId, isPublished: true } as any,
+      order: { createdAt: 'ASC' } as any,
     });
   }
 
   async findById(id: string): Promise<Task> {
     const task = await this.tasksRepository.findOne({
-      where: { id },
+      where: { id } as any,
       relations: ['topic', 'topic.course'],
     });
     if (!task) {
@@ -46,7 +46,7 @@ export class TasksService {
 
   async findAllAdmin(): Promise<Task[]> {
     return this.tasksRepository.find({
-      order: { createdAt: 'ASC' },
+      order: { createdAt: 'ASC' } as any,
       relations: ['topic', 'topic.course'],
     });
   }
@@ -61,7 +61,7 @@ export class TasksService {
   }
 
   async getRequiredTasksCount(topicId: string): Promise<number> {
-    return this.tasksRepository.count({ where: { topicId, isRequired: true, isPublished: true } });
+    return this.tasksRepository.count({ where: { topicId, isRequired: true, isPublished: true } as any });
   }
 
   async search(query: string): Promise<Task[]> {
