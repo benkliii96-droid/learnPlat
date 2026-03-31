@@ -1,12 +1,10 @@
-version: '3.8'
-
 services:
   postgres:
     image: postgres:16-alpine
     container_name: code_learning_db
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres  # замените на надежный пароль
+      POSTGRES_PASSWORD: postgres
       POSTGRES_DB: code_learning
     ports:
       - "5432:5432"
@@ -20,9 +18,9 @@ services:
       DB_HOST: postgres
       DB_PORT: 5432
       DB_USER: postgres
-      DB_PASSWORD: postgres  # должно совпадать с POSTGRES_PASSWORD
+      DB_PASSWORD: postgres
       DB_NAME: code_learning
-      JWT_SECRET: your-secret-key-change-in-production  # обязательно смените!
+      JWT_SECRET: your-secret-key-change-in-production
     ports:
       - "3001:3001"
     depends_on:
@@ -32,7 +30,7 @@ services:
     build: ./frontend
     container_name: code_learning_frontend
     ports:
-      - "80:80"  # внешний порт 80 -> внутренний 80
+      - "80:80"
     depends_on:
       - backend
 
