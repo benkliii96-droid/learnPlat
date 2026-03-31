@@ -95,7 +95,6 @@ export class UsersService {
   async getLeaderboard(): Promise<{ id: string; name: string; totalPoints: number; completedTasks: number; completedTopics: number }[]> {
     return this.usersRepository.find({
       order: { totalPoints: 'DESC' },
-      where: { role: UserRole.USER },
       select: ['id', 'name', 'totalPoints', 'completedTasks', 'completedTopics'],
       take: 100,
     });

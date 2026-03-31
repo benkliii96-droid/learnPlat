@@ -99,4 +99,11 @@ export const submissionsApi = {
     api.put(`/submissions/${id}/reject`, data),
 };
 
+// Progress
+export const progressApi = {
+  getCourseProgress: (courseId: string) => api.get(`/progress/course/${courseId}`),
+  getOverall: () => api.get('/progress/overall'),
+  updateTopicsProgress: (courseId: string) => api.post(`/progress/update-topics/${courseId}`),
+};
+
 export default api;

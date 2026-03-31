@@ -1,6 +1,6 @@
 import { Link, useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { coursesApi, topicsApi, submissionsApi } from '../services/api';
+import { coursesApi, topicsApi, submissionsApi, progressApi } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useEffect, useState } from 'react';
 
@@ -80,6 +80,19 @@ export default function CourseView() {
     checkCompletedTopics();
   }, [user, topics]);
 
+  // Обновляем прогресс тем на сервере
+  useEffect(() => {
+    const updateProgress = async () => {
+      if (!user || !courseId || !topics) return;
+      try {
+        await progressApi.updateTopicsProgress(courseId);
+      } catch (e) {
+        // Игнорируем ошибки
+      }
+    };
+    updateProgress();
+  }, [user, courseId, topics, completedTopics]);
+
   // Проверяем, можно ли перейти к теме (все предыдущие должны быть пройдены)
   const canAccessTopic = (topicIndex: number): boolean => {
     if (!user) return topicIndex === 0; // Неавторизованный может только первую
@@ -97,6 +110,9 @@ export default function CourseView() {
     return <div className="py-8 text-center">Загрузка...</div>;
   }
 
+  const completedCount = completedTopics.size;
+  const totalTopicsCount = topics?.length || 0;
+
   return (
     <div>
       <div className="mb-8">
@@ -105,6 +121,11 @@ export default function CourseView() {
         </Link>
         <h1 className="text-3xl font-bold text-gray-900">{course?.name}</h1>
         <p className="mt-2 text-gray-600">{course?.description}</p>
+        {totalTopicsCount > 0 && (
+          <p className="mt-2 text-sm text-gray-500">
+            Всего тем: {totalTopicsCount} • Пройдено: {completedCount}
+          </p>
+        )}
       </div>
 
       <div className="space-y-4">

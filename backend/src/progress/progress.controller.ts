@@ -1,4 +1,4 @@
-import { Controller, Get, Param, UseGuards, Request } from '@nestjs/common';
+import { Controller, Get, Param, UseGuards, Request, Post } from '@nestjs/common';
 import { ProgressService } from './progress.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
@@ -16,5 +16,12 @@ export class ProgressController {
   @Get('overall')
   async getOverallProgress(@Request() req) {
     return this.progressService.getOverallProgress(req.user.userId);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('update-topics/:courseId')
+  async updateTopicsProgress(@Request() req, @Param('courseId') courseId: string) {
+    const completedTopics = await this.progressService.updateTopicsProgress(req.user.userId, courseId);
+    return { completedTopics };
   }
 }
