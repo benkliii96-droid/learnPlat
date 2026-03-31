@@ -1,8 +1,10 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, Inject, forwardRef } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Submission, SubmissionStatus } from './submission.entity';
 import { UsersService } from '../users/users.service';
+import { TasksService } from '../tasks/tasks.service';
+import { ProgressService } from '../progress/progress.service';
 import { Task, TaskType } from '../tasks/task.entity';
 
 @Injectable()
@@ -11,6 +13,9 @@ export class SubmissionsService {
     @InjectRepository(Submission)
     private submissionsRepository: Repository<Submission>,
     private usersService: UsersService,
+    private tasksService: TasksService,
+    @Inject(forwardRef(() => ProgressService))
+    private progressService: ProgressService,
   ) {}
 
   async create(userId: string, taskId: string, code?: string, solutionText?: string, filePath?: string): Promise<Submission> {
@@ -69,6 +74,16 @@ export class SubmissionsService {
     await this.submissionsRepository.save(submission);
     await this.usersService.updateStats(submission.userId, points);
     await this.usersService.incrementCompletedTasks(submission.userId);
+
+    // Обновляем прогресс тем после approve
+    const task = await this.tasksService.findById(submission.taskId);
+    if (task?.topic?.courseId) {
+      try {
+        await this.progressService.updateTopicsProgress(submission.userId, task.topic.courseId);
+      } catch (e) {
+        // Игнорируем ошибки обновления прогресса
+      }
+    }
 
     return submission;
   }

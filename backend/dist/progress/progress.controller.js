@@ -26,6 +26,10 @@ let ProgressController = class ProgressController {
     async getOverallProgress(req) {
         return this.progressService.getOverallProgress(req.user.userId);
     }
+    async updateTopicsProgress(req, courseId) {
+        const completedTopics = await this.progressService.updateTopicsProgress(req.user.userId, courseId);
+        return { completedTopics };
+    }
 };
 exports.ProgressController = ProgressController;
 __decorate([
@@ -45,6 +49,15 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], ProgressController.prototype, "getOverallProgress", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.Post)('update-topics/:courseId'),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Param)('courseId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String]),
+    __metadata("design:returntype", Promise)
+], ProgressController.prototype, "updateTopicsProgress", null);
 exports.ProgressController = ProgressController = __decorate([
     (0, common_1.Controller)('progress'),
     __metadata("design:paramtypes", [progress_service_1.ProgressService])

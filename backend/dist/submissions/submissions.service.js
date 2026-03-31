@@ -18,11 +18,15 @@ const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const submission_entity_1 = require("./submission.entity");
 const users_service_1 = require("../users/users.service");
+const tasks_service_1 = require("../tasks/tasks.service");
+const progress_service_1 = require("../progress/progress.service");
 const task_entity_1 = require("../tasks/task.entity");
 let SubmissionsService = class SubmissionsService {
-    constructor(submissionsRepository, usersService) {
+    constructor(submissionsRepository, usersService, tasksService, progressService) {
         this.submissionsRepository = submissionsRepository;
         this.usersService = usersService;
+        this.tasksService = tasksService;
+        this.progressService = progressService;
     }
     async create(userId, taskId, code, solutionText, filePath) {
         const submission = this.submissionsRepository.create({
@@ -74,6 +78,14 @@ let SubmissionsService = class SubmissionsService {
         await this.submissionsRepository.save(submission);
         await this.usersService.updateStats(submission.userId, points);
         await this.usersService.incrementCompletedTasks(submission.userId);
+        const task = await this.tasksService.findById(submission.taskId);
+        if (task?.topic?.courseId) {
+            try {
+                await this.progressService.updateTopicsProgress(submission.userId, task.topic.courseId);
+            }
+            catch (e) {
+            }
+        }
         return submission;
     }
     async reject(id, comment) {
@@ -164,7 +176,10 @@ exports.SubmissionsService = SubmissionsService;
 exports.SubmissionsService = SubmissionsService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(submission_entity_1.Submission)),
+    __param(3, (0, common_1.Inject)((0, common_1.forwardRef)(() => progress_service_1.ProgressService))),
     __metadata("design:paramtypes", [typeorm_2.Repository,
-        users_service_1.UsersService])
+        users_service_1.UsersService,
+        tasks_service_1.TasksService,
+        progress_service_1.ProgressService])
 ], SubmissionsService);
 //# sourceMappingURL=submissions.service.js.map

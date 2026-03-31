@@ -11,29 +11,95 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ProgressService = void 0;
 const common_1 = require("@nestjs/common");
+const topics_service_1 = require("../topics/topics.service");
+const submissions_service_1 = require("../submissions/submissions.service");
+const users_service_1 = require("../users/users.service");
 let ProgressService = class ProgressService {
-    constructor() { }
+    constructor(topicsService, submissionsService, usersService) {
+        this.topicsService = topicsService;
+        this.submissionsService = submissionsService;
+        this.usersService = usersService;
+    }
     async getCourseProgress(userId, courseId) {
+        const topics = await this.topicsService.findByCourse(courseId);
+        let completedTopics = 0;
+        let completedTasks = 0;
+        let totalTasks = 0;
+        for (const topic of topics) {
+            const tasks = topic.tasks || [];
+            totalTasks += tasks.length;
+            let allRequiredCompleted = true;
+            let topicCompletedTasks = 0;
+            for (const task of tasks) {
+                const isCompleted = await this.submissionsService.isTaskCompleted(userId, task.id);
+                if (isCompleted) {
+                    completedTasks++;
+                    topicCompletedTasks++;
+                }
+                else if (task.isRequired) {
+                    allRequiredCompleted = false;
+                }
+            }
+            const requiredTasks = tasks.filter(t => t.isRequired);
+            if (allRequiredCompleted && requiredTasks.length > 0) {
+                completedTopics++;
+            }
+        }
+        const percentage = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
         return {
             courseId,
-            completedTopics: 0,
-            totalTopics: 0,
-            completedTasks: 0,
-            totalTasks: 0,
-            percentage: 0,
+            completedTopics,
+            totalTopics: topics.length,
+            completedTasks,
+            totalTasks,
+            percentage,
         };
     }
     async getOverallProgress(userId) {
+        const stats = await this.usersService.getStats(userId);
         return {
-            totalPoints: 0,
-            completedTopics: 0,
-            completedTasks: 0,
+            totalPoints: stats.totalPoints,
+            completedTopics: stats.completedTopics,
+            completedTasks: stats.completedTasks,
         };
+    }
+    async updateTopicsProgress(userId, courseId) {
+        const topics = await this.topicsService.findByCourse(courseId);
+        let completedTopics = 0;
+        for (const topic of topics) {
+            const tasks = topic.tasks || [];
+            const requiredTasks = tasks.filter(t => t.isRequired);
+            if (requiredTasks.length === 0) {
+                completedTopics++;
+                continue;
+            }
+            let allRequiredCompleted = true;
+            for (const task of requiredTasks) {
+                const isCompleted = await this.submissionsService.isTaskCompleted(userId, task.id);
+                if (!isCompleted) {
+                    allRequiredCompleted = false;
+                    break;
+                }
+            }
+            if (allRequiredCompleted) {
+                completedTopics++;
+            }
+        }
+        const currentStats = await this.usersService.getStats(userId);
+        if (completedTopics > currentStats.completedTopics) {
+            const diff = completedTopics - currentStats.completedTopics;
+            for (let i = 0; i < diff; i++) {
+                await this.usersService.incrementCompletedTopics(userId);
+            }
+        }
+        return completedTopics;
     }
 };
 exports.ProgressService = ProgressService;
 exports.ProgressService = ProgressService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [])
+    __metadata("design:paramtypes", [topics_service_1.TopicsService,
+        submissions_service_1.SubmissionsService,
+        users_service_1.UsersService])
 ], ProgressService);
 //# sourceMappingURL=progress.service.js.map

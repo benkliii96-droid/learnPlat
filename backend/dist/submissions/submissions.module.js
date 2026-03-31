@@ -13,12 +13,14 @@ const submission_entity_1 = require("./submission.entity");
 const submissions_service_1 = require("./submissions.service");
 const submissions_controller_1 = require("./submissions.controller");
 const users_module_1 = require("../users/users.module");
+const tasks_module_1 = require("../tasks/tasks.module");
+const progress_module_1 = require("../progress/progress.module");
 let SubmissionsModule = class SubmissionsModule {
 };
 exports.SubmissionsModule = SubmissionsModule;
 exports.SubmissionsModule = SubmissionsModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([submission_entity_1.Submission]), users_module_1.UsersModule],
+        imports: [typeorm_1.TypeOrmModule.forFeature([submission_entity_1.Submission]), users_module_1.UsersModule, tasks_module_1.TasksModule, progress_module_1.ProgressModule],
         providers: [submissions_service_1.SubmissionsService],
         controllers: [submissions_controller_1.SubmissionsController],
         exports: [submissions_service_1.SubmissionsService],

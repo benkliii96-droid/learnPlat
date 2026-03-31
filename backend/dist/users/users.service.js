@@ -127,7 +127,6 @@ let UsersService = class UsersService {
     async getLeaderboard() {
         return this.usersRepository.find({
             order: { totalPoints: 'DESC' },
-            where: { role: user_entity_1.UserRole.USER },
             select: ['id', 'name', 'totalPoints', 'completedTasks', 'completedTopics'],
             take: 100,
         });
